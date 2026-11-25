@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>步骤详情 - one-build</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<header class="top">
+    <div class="brand">one-build</div>
+    <nav>
+        <a href="/index.html#/projects">项目</a>
+        <a href="/tasks.html#/tasks">任务</a>
+        <a href="/admin.html#/environments">管理</a>
+        <a href="#" id="logoutLink">退出</a>
+    </nav>
+</header>
+<main class="layout steps-layout">
+    <section class="panel main">
+        <div class="toolbar" style="justify-content:space-between">
+            <h2 style="margin:0">步骤详情</h2>
+            <div class="toolbar" style="margin:0">
+                <button id="copyStepUrl" class="btn">复制本页 URL</button>
+                <button id="backAdmin" class="btn">返回管理</button>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <label><span>项目</span><select id="projectSelect"></select></label>
+            <label><span>环境</span><select id="environmentSelect"></select></label>
+            <button id="loadConfig" class="primary">加载</button>
+            <span id="configMsg" class="hint"></span>
+        </div>
+
+        <div id="projectOverview" class="env-chips"></div>
+
+        <div class="toolbar">
+            <label><span>整体超时(秒)</span><input id="overallTimeout" type="number" value="3600" style="width:130px"></label>
+            <button id="configSave" class="primary">保存配置</button>
+            <button id="configToggle">禁用配置</button>
+            <button id="configDelete" class="danger">删除配置</button>
+            <span id="configState" class="badge off">未创建</span>
+        </div>
+
+        <h3>步骤列表 <span id="stepCount" class="hint"></span></h3>
+        <table>
+            <thead><tr><th>#</th><th>名称</th><th>命令</th><th>工作目录</th><th>超时/轮询</th>
+                <th>启用</th><th>操作人/时间</th><th>操作</th></tr></thead>
+            <tbody id="stepBody"><tr><td colspan="8" class="hint">请选择项目与环境后加载</td></tr></tbody>
+        </table>
+        <div class="toolbar">
+            <button id="stepNew" class="primary">新增步骤</button>
+            <span class="hint">序号从 0 开始；上移/下移调整执行顺序</span>
+        </div>
+
+        <h3 id="stepFormTitle">新增 SCRIPT 步骤</h3>
+        <div class="grid2">
+            <label><span class="required">名称</span><input id="stName" placeholder="如：编译 / 执行 / 存活验证"></label>
+            <label><span>工作目录(相对工作空间)</span>
+                <div class="inline-field">
+                    <input id="stWorkdir" value=".">
+                    <button id="useTreeWorkdir" class="btn" type="button">取右侧目录</button>
+                </div>
+            </label>
+            <label><span>Shell</span><select id="stShell">
+                <option value="auto">auto</option><option value="bash">bash</option>
+                <option value="sh">sh</option><option value="cmd">cmd</option>
+                <option value="powershell">powershell</option></select></label>
+            <label><span>单步超时(秒)</span><input id="stTimeout" type="number" value="600"></label>
+            <label><span>轮询间隔(秒)</span><input id="stPoll" type="number" value="2"></label>
+            <label><span>启用</span><select id="stEnabled">
+                <option value="true">启用</option><option value="false">禁用</option></select></label>
+        </div>
+        <label><span class="required">命令</span><textarea id="stCommand" placeholder="mvn -B -DskipTests clean package"></textarea></label>
+        <details class="command-help" open>
+            <summary>命令说明（含 SpEL 前序步骤输出示例）</summary>
+            <div class="command-help-body">
+                <p>步骤序号从 <b>0</b> 开始。执行第 N 步时，可以在命令或环境变量中用 Spring EL 读取<b>前面已成功步骤</b>的结果：</p>
+                <table class="mini-table">
+                    <tr><td class="mono">#{steps[0].output}</td><td>第 0 步的输出文本</td></tr>
+                    <tr><td class="mono">#{steps[0].exitCode}</td><td>第 0 步退出码</td></tr>
+                    <tr><td class="mono">#{steps[0].status}</td><td>第 0 步状态（SUCCESS）</td></tr>
+                    <tr><td class="mono">#{steps[0].name}</td><td>第 0 步名称</td></tr>
+                    <tr><td class="mono">#{steps.size()}</td><td>前序步骤数量</td></tr>
+                    <tr><td class="mono">#{task.autoBranch}</td><td>本次自动合并分支</td></tr>
+                </table>
+                <p>等价的系统环境变量（系统注入）：<span class="mono">%OB_STEP_COUNT%</span>、
+                    <span class="mono">%OB_STEP_0_OUTPUT%</span>、<span class="mono">%OB_STEP_0_EXIT_CODE%</span>；
+                    bash/sh 使用 <span class="mono">$OB_STEP_0_OUTPUT</span>。</p>
+                <p>示例（hello-world 三步）：</p>
+                <pre class="log help-example"># 步骤 0：编译
+javac -encoding UTF-8 -d out/production/hello-world src/HelloWorld.java
+
+# 步骤 1：执行
+java -cp out/production/hello-world HelloWorld
+
+# 步骤 2：用第 1 步的输出做期望值验证（Windows cmd）
+echo #{steps[1].output} | findstr /C:"Hello, World!"
+
+# bash/sh 写法
+echo "$OB_STEP_1_OUTPUT" | grep -q "Hello, World!"</pre>
+                <p class="hint">注意：单步“测试”没有前序步骤结果；表达式写错或引用未执行步骤会直接判定该步骤失败；
+                    <span class="mono">OB_*</span> 系统变量不参与表达式渲染。</p>
+            </div>
+        </details>
+        <label><span>环境变量(每行 KEY=VALUE，值支持 SpEL)</span><textarea id="stEnv" placeholder="JAVA_HOME=/opt/jdk17"></textarea></label>
+        <div class="toolbar">
+            <button id="stepSave" class="primary">新增步骤</button>
+            <button id="stepCancelEdit" style="display:none">取消编辑</button>
+            <span id="stepMsg" class="hint"></span>
+        </div>
+    </section>
+
+    <aside class="panel tree-aside">
+        <h3 style="margin-top:0">项目结构</h3>
+        <div class="toolbar">
+            <button id="treeUp">上一级</button>
+            <button id="treeRefresh">刷新</button>
+        </div>
+        <div id="treeBreadcrumb" class="breadcrumb hint"></div>
+        <ul id="treeList" class="tree-list"></ul>
+        <div class="toolbar">
+            <button id="copyRelPath" class="btn">复制相对路径</button>
+            <button id="copyAbsPath" class="btn">复制绝对路径</button>
+            <button id="useWorkdir" class="btn">填入工作目录</button>
+        </div>
+        <div id="treeMsg" class="hint"></div>
+    </aside>
+</main>
+<script src="/js/common.js"></script>
+<script src="/js/steps.js"></script>
+</body>
+</html>

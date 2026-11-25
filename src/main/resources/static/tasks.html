@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>任务 - one-build</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<header class="top">
+    <div class="brand">one-build</div>
+    <nav>
+        <a href="/index.html#/projects">项目</a>
+        <a href="/tasks.html#/tasks" class="active">任务</a>
+        <a href="/admin.html#/environments">管理</a>
+        <a href="#" id="logoutLink">退出</a>
+    </nav>
+</header>
+<main class="layout" id="listLayout">
+    <section class="panel" style="flex:1">
+        <h2>任务</h2>
+        <div class="toolbar">
+            <select id="typeFilter">
+                <option value="">全部类型</option>
+                <option value="MERGE">自动合并（MERGE）</option>
+                <option value="TRIGGER">手动步骤（TRIGGER）</option>
+            </select>
+            <select id="statusFilter">
+                <option value="">全部状态</option>
+                <option>PENDING</option><option>MERGING</option><option>PUSHING</option>
+                <option>MERGED</option><option>PREPARING</option><option>EXECUTING</option>
+                <option>SUCCESS</option><option>FAILED</option><option>TIMEOUT</option>
+                <option>CONFLICT</option><option>CANCELLED</option><option>INTERRUPTED</option>
+            </select>
+            <input id="projectFilter" placeholder="项目名称">
+            <input id="branchFilter" placeholder="分支（来源/目标）">
+            <button id="refreshTasks">查询</button>
+            <button id="resetFilters">重置</button>
+        </div>
+        <table>
+            <thead><tr><th>ID</th><th>类型</th><th>项目</th><th>来源分支</th><th>目标分支</th><th>状态</th><th>耗时</th><th>创建时间</th><th>操作</th></tr></thead>
+            <tbody id="taskBody"><tr><td colspan="9" class="hint">加载中…</td></tr></tbody>
+        </table>
+        <div class="toolbar">
+            <button id="prevPage">上一页</button>
+            <span id="pageInfo" class="hint"></span>
+            <button id="nextPage">下一页</button>
+        </div>
+    </section>
+</main>
+<main class="layout" id="detailLayout" style="display:none">
+    <section class="panel" style="flex:1">
+        <h2>任务详情 <span id="dId" class="badge"></span>
+            <button id="copyTaskUrl" class="btn">复制任务 URL</button>
+            <button id="backToList" class="btn">返回列表</button>
+        </h2>
+        <div class="kv" id="dInfo"></div>
+        <div class="toolbar">
+            <button id="cancelBtn" class="danger">取消任务</button>
+            <span id="cancelHint" class="hint"></span>
+        </div>
+        <h3>步骤时间线</h3>
+        <table>
+            <thead><tr><th>#</th><th>名称</th><th>类型</th><th>状态</th><th>尝试</th><th>结果码</th><th>退出码</th><th>开始</th><th>结束</th><th>耗时</th><th>日志</th></tr></thead>
+            <tbody id="stepBody"></tbody>
+        </table>
+        <h3>日志</h3>
+        <div class="toolbar">
+            <button id="loadMergeLog" class="btn">查看自动合并日志</button>
+        </div>
+        <pre id="logBox" class="log"></pre>
+    </section>
+</main>
+<script src="/js/common.js"></script>
+<script src="/js/tasks.js"></script>
+</body>
+</html>

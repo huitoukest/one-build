@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>项目 - one-build</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<header class="top">
+    <div class="brand">one-build</div>
+    <nav>
+        <a href="/index.html#/projects" class="active">项目</a>
+        <a href="/tasks.html#/tasks">任务</a>
+        <a href="/admin.html#/environments">管理</a>
+        <a href="#" id="logoutLink">退出</a>
+    </nav>
+</header>
+<main class="layout">
+    <aside class="panel aside">
+        <h2>项目</h2>
+        <div class="toolbar">
+            <input id="search" placeholder="搜索项目名称" style="flex:1">
+            <button id="refreshProjects">刷新</button>
+        </div>
+        <ul id="projectList" class="project-list"></ul>
+    </aside>
+    <section class="panel main">
+        <div id="emptyHint" class="hint">请选择左侧项目</div>
+        <div id="projectDetail" style="display:none">
+            <div class="toolbar" style="justify-content:space-between">
+                <h2 id="pName" style="margin:0"></h2>
+                <button id="conflictHelp" class="btn">冲突怎么处理？</button>
+            </div>
+            <div id="pStatusLine" class="toolbar"></div>
+            <div class="kv">
+                <div class="k">仓库地址</div><div id="pRepo" class="mono"></div>
+                <div class="k">地址类型</div><div id="pRepoType"></div>
+                <div class="k">最后更新</div><div id="pUpdated"></div>
+                <div class="k">最后提交人</div><div id="pAuthor"></div>
+                <div class="k">项目锁</div><div id="pLock"></div>
+                <div class="k">基准分支</div><div id="pBase" class="mono"></div>
+            </div>
+            <h3>当前目标分支 <button id="copyBranch" class="btn">复制</button></h3>
+            <div id="pAutoBranch" class="mono">-</div>
+            <div id="operatorsLine" class="hint"></div>
+            <div id="selectedTags" style="margin:8px 0"></div>
+            <h3>部署环境</h3>
+            <div id="envChips" class="env-chips"></div>
+            <div class="toolbar">
+                <button id="deployBtn" class="primary">部署 / 触发</button>
+                <span id="deployHint" class="hint"></span>
+            </div>
+            <div id="taskStatus" class="status-box" style="display:none"></div>
+            <div id="conflictBox"></div>
+            <h3>分支列表（新 → 旧）</h3>
+            <table>
+                <thead><tr><th>分支</th><th>最后提交时间</th><th>最后提交人</th><th style="width:110px">操作</th></tr></thead>
+                <tbody id="branchBody"><tr><td colspan="4" class="hint">加载中…</td></tr></tbody>
+            </table>
+            <div class="toolbar">
+                <button id="prevPage">上一页</button>
+                <span id="pageInfo" class="hint"></span>
+                <button id="nextPage">下一页</button>
+                <button id="refreshBranches">刷新分支</button>
+            </div>
+        </div>
+    </section>
+</main>
+<script src="/js/common.js"></script>
+<script src="/js/projects.js"></script>
+</body>
+</html>

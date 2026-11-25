@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>登录 - one-build</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="login-page">
+<div class="login-card">
+    <h1>one-build</h1>
+    <form id="loginForm">
+        <label><span>账号</span><input id="username" autocomplete="username" required></label>
+        <label><span>密码</span><input id="password" type="password" autocomplete="current-password" required></label>
+        <button type="submit">登录</button>
+        <div id="msg" class="error" style="margin-top:10px"></div>
+    </form>
+</div>
+<script src="/js/common.js"></script>
+<script>
+    OB.ensureCsrf();
+    OB.el('loginForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const msg = OB.el('msg');
+        msg.textContent = '';
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-XSRF-TOKEN': OB.getCookie('XSRF-TOKEN')
+            },
+            body: JSON.stringify({
+                username: OB.el('username').value.trim(),
+                password: OB.el('password').value
+            })
+        });
+        const data = await response.json().catch(function () {
+            return { message: '请求失败' };
+        });
+        if (response.ok && data.code === 0) {
+            const target = OB.returnTo();
+            OB.clearReturnTo();
+            location.href = target || '/index.html';
+        } else {
+            msg.textContent = data.message || '登录失败';
+        }
+    });
+</script>
+</body>
+</html>

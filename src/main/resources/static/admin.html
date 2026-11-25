@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>管理 - one-build</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<header class="top">
+    <div class="brand">one-build</div>
+    <nav>
+        <a href="/index.html#/projects">项目</a>
+        <a href="/tasks.html#/tasks">任务</a>
+        <a href="/admin.html#/environments" class="active">管理</a>
+        <a href="#" id="logoutLink">退出</a>
+    </nav>
+</header>
+<main class="layout">
+    <section class="panel" style="flex:1">
+        <div class="tabs">
+            <button data-tab="environments" class="active">环境</button>
+            <button data-tab="projects">项目</button>
+            <button data-tab="steps">步骤配置</button>
+            <button data-tab="recycle">回收站</button>
+            <button data-tab="credentials">凭证</button>
+        </div>
+
+        <div id="tab-environments">
+            <h3 id="envFormTitle">新增环境</h3>
+            <div class="form-row">
+                <label><span class="required">名称</span><input id="envName"></label>
+                <label><span class="required">Key</span><input id="envKey" placeholder="如 test1"></label>
+                <label><span>说明</span><input id="envDesc" style="width:240px"></label>
+                <label><span>排序</span><input id="envSort" type="number" value="0" style="width:90px"></label>
+            </div>
+            <label><span>默认环境变量（每行 KEY=VALUE，优先级低于步骤变量）</span>
+                <textarea id="envVars" placeholder="JAVA_HOME=/opt/jdk17"></textarea></label>
+            <div class="toolbar">
+                <button id="envSave" class="primary">新增</button>
+                <button id="envCancelEdit" style="display:none">取消编辑</button>
+                <span id="envMsg" class="hint"></span>
+            </div>
+            <table><thead><tr><th>ID</th><th>名称</th><th>Key</th><th>说明</th><th>排序</th><th>启用</th><th>操作</th></tr></thead>
+                <tbody id="envBody"></tbody></table>
+        </div>
+
+        <div id="tab-projects" style="display:none">
+            <h3 id="projFormTitle">新增项目</h3>
+            <div class="form-row">
+                <label><span class="required">名称</span><input id="projName"></label>
+                <label><span class="required">仓库地址</span><input id="projRepo" style="width:320px"></label>
+                <label><span>地址类型</span>
+                    <select id="projRepoType">
+                        <option value="FILE_PATH">文件路径</option>
+                        <option value="GIT_HTTP">Git HTTP（预留）</option>
+                        <option value="GIT_SSH">Git SSH（预留）</option>
+                    </select>
+                </label>
+                <label><span>凭证</span><select id="projCredential"></select></label>
+                <label><span>基准分支</span><input id="projBase" value="master" style="width:120px"></label>
+                <button id="projValidate">校验</button>
+                <button id="projSave" class="primary">新增</button>
+                <button id="projCancelEdit" style="display:none">取消编辑</button>
+            </div>
+            <div id="projMsg" class="hint"></div>
+            <table><thead><tr><th>ID</th><th>名称</th><th>仓库地址</th><th>类型</th><th>基准分支</th><th>启用</th><th>操作</th></tr></thead>
+                <tbody id="projBody"></tbody></table>
+        </div>
+
+        <div id="tab-steps" style="display:none">
+            <h3>步骤配置</h3>
+            <div class="form-row">
+                <label><span>环境</span><select id="stepEnvFilter"><option value="">全部环境</option></select></label>
+                <label><span>项目名称</span><input id="stepKeyword" placeholder="模糊匹配"></label>
+                <button id="stepSearch" class="primary">查询</button>
+            </div>
+            <table><thead><tr><th>项目</th><th>环境</th><th>状态</th><th>步骤数</th><th>更新时间</th><th>操作</th></tr></thead>
+                <tbody id="stepConfigBody"></tbody></table>
+        </div>
+
+        <div id="tab-recycle" style="display:none">
+            <h3>回收站（保留 30 天，可恢复）</h3>
+            <table><thead><tr><th>ID</th><th>名称</th><th>仓库地址</th><th>删除时间</th><th>操作</th></tr></thead>
+                <tbody id="recycleBody"></tbody></table>
+        </div>
+
+        <div id="tab-credentials" style="display:none">
+            <h3>新增凭证</h3>
+            <div class="form-row">
+                <label><span class="required">名称</span><input id="credName"></label>
+                <label><span>认证方式</span>
+                    <select id="credType">
+                        <option value="TOKEN">TOKEN</option>
+                        <option value="SSH_KEY">SSH_KEY</option>
+                        <option value="USERNAME_PASSWORD">USERNAME_PASSWORD</option>
+                    </select>
+                </label>
+                <label><span>用户名</span><input id="credUsername"></label>
+                <label><span>密钥/密码</span><input id="credSecret" type="password"></label>
+                <button id="credAdd" class="primary">新增</button>
+            </div>
+            <table><thead><tr><th>ID</th><th>名称</th><th>类型</th><th>用户名</th><th>最近测试</th><th>操作</th></tr></thead>
+                <tbody id="credBody"></tbody></table>
+        </div>
+    </section>
+</main>
+<script src="/js/common.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

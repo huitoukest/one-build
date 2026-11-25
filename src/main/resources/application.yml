@@ -1,0 +1,72 @@
+server:
+  port: 8088
+  servlet:
+    session:
+      timeout: 8h
+      cookie:
+        http-only: true
+        same-site: lax
+
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Asia/Shanghai
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+  h2:
+    console:
+      enabled: false
+
+one-build:
+  admin:
+    username: admin
+    password: admin123
+  home: ""
+  security:
+    master-key: ${ONE_BUILD_MASTER_KEY:one-build-dev-master-key-change-me}
+    login-fail-limit: 5
+    login-lock-minutes: 10
+  git:
+    identity-name: one-build
+    identity-email: one-build@local
+    push-option: ""
+    command-timeout-seconds: 600
+  merge:
+    branch-prefix: auto_merge/
+    max-branches: 20
+    max-branch-name-length: 200
+  project:
+    recycle-retention-days: 30
+  step:
+    default-timeout-seconds: 600
+    default-poll-interval-seconds: 2
+    min-poll-interval-millis: 100
+    max-log-bytes-per-step: 2097152
+    max-log-lines-per-step: 3000
+    excerpt-max-chars: 65536
+    env-output-max-chars: 8000
+    env-output-total-max-chars: 24576
+    shell: auto
+  trigger:
+    default-overall-timeout-seconds: 3600
+  instance:
+    lock-file: one-build.lock
+  scheduler:
+    timezone: Asia/Shanghai
+
+logging:
+  file:
+    name: ${one-build.home}/logs/one-build.log
+  level:
+    com.onebuild: INFO
